@@ -112,6 +112,6 @@ class MovieState extends State<MoviePage> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose()
+    _tabController.dispose();
   }
 }
