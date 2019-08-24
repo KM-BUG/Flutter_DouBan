@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:playdouban/res/CustomColors.dart';
 import 'package:playdouban/res/TextString.dart';
+import 'package:playdouban/ui/movie/MovieDetailPage.dart';
+
+import 'movie/HotSoonWidget.dart';
 
 class MoviePage extends StatefulWidget {
   @override
@@ -79,15 +82,15 @@ class MovieState extends State<MoviePage> with SingleTickerProviderStateMixin {
           indicatorColor: CustomColors.color_383838,
           // 指示器高度
           indicatorWeight: 2,
-          unselectedLabelStyle: TextStyle(fontSize: 12),
+          unselectedLabelStyle: TextStyle(fontSize: 16),
           labelStyle: TextStyle(fontSize: 16),
+          indicatorSize: TabBarIndicatorSize.label,
         ),
       ),
       body: TabBarView(
         children: <Widget>[
-          new Center(
-            child: Text("电影"),
-          ),
+          // 电影
+          MovieDetailPage(),
           new Center(
             child: Text("电视"),
           ),

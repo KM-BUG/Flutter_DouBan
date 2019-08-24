@@ -10,4 +10,5 @@ class TextString{
   static const String text_city = "同城";
   static const String text_music = "音乐";
   static const String text_street = "市集";
+  static const String text_hot_movie = "影院热映";
 }
