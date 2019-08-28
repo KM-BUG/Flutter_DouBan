@@ -45,7 +45,7 @@ class Directors {
   Directors.fromJson(Map<String, dynamic> json) {
     alt = json['alt'];
     avatars =
-    json['avatars'] != null ? new Avatars.fromJson(json['avatars']) : null;
+        json['avatars'] != null ? new Avatars.fromJson(json['avatars']) : null;
     id = json['id'];
     name = json['name'];
     nameEn = json['name_en'];
@@ -239,13 +239,15 @@ class Casts {
 class Rating {
   int max;
   int min;
+  num average;
   String stars;
 
-  Rating({ this.max, this.min, this.stars});
+  Rating({this.max, this.min, this.average, this.stars});
 
   Rating.fromJson(Map<String, dynamic> json) {
     max = json['max'];
     min = json['min'];
+    average = json['average'];
     stars = json['stars'];
   }
 
@@ -253,6 +255,7 @@ class Rating {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['max'] = this.max;
     data['min'] = this.min;
+    data['average'] = this.average;
     data['stars'] = this.stars;
     return data;
   }

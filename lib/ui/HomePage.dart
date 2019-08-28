@@ -17,10 +17,10 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Center(
-      child: Text(
-        "首页",
-        style: TextStyle(color: CustomColors.color_1a1b1d),
-      ),
-    );
+        child: Image(
+      image: AssetImage("images/ic_subject_mark_add.png"),
+      height: 20,
+      width: 20,
+    ));
   }
 }
