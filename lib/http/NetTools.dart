@@ -30,8 +30,8 @@ class NetTools {
   // 公共代码部分
   static void _request(String url, Function callBack,
       {String method,
-        Map<String, String> params,
-        Function errorCallBack}) async {
+      Map<String, String> params,
+      Function errorCallBack}) async {
     print("<net> url :<" + method + ">" + url);
 
     if (params != null && params.isNotEmpty) {
@@ -54,6 +54,7 @@ class NetTools {
           paramStr = paramStr.substring(0, paramStr.length - 1);
           url += paramStr;
         }
+        print("url:" + url);
         response = await Dio().get(url);
       } else {
         if (params != null && params.isNotEmpty) {

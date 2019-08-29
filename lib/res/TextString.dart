@@ -12,4 +12,8 @@ class TextString{
   static const String text_street = "市集";
   static const String text_hot_movie = "影院热映";
   static const String text_movie_soon = "即将上映";
+  static const String text_find_movie = "找电影";
+  static const String text_douban_top = "豆瓣榜单";
+  static const String text_douban_guess = "豆瓣猜";
+  static const String text_douban_film_list = "豆瓣片单";
 }

@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:playdouban/http/ApiConfig.dart';
 import 'package:playdouban/http/NetTools.dart';
 import 'package:playdouban/model/MovieHot.dart';
 import 'package:playdouban/res/CustomColors.dart';
 import 'package:playdouban/res/TextString.dart';
+import 'package:playdouban/widget/MultiImageWidget.dart';
 import 'package:playdouban/widget/RatingBar.dart';
+import 'package:playdouban/widget/TopIconWidget.dart';
 
 class MovieDetailPage extends StatefulWidget {
   @override
@@ -23,6 +27,9 @@ class MovieDetailState extends State<MovieDetailPage>
 
   // 电影数量
   int movieCount = 0;
+
+  // 今日可看电影
+  List<Subjects> todayMovieList = new List();
 
   // 影院热映,即将上映电影
   List<Subjects> movieList = new List();
@@ -62,7 +69,100 @@ class MovieDetailState extends State<MovieDetailPage>
         }
       },
     );
+    // 获取今日可看电影
+    _getBannerMovie();
+    // 获取影院热映电影
     _getMovieHot();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    return CustomScrollView(
+      shrinkWrap: true,
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(top: 16, bottom: 10),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: TopIconWidget(
+                      "images/ic_find_movie.png", TextString.text_find_movie),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: TopIconWidget(
+                      "images/ic_douban_top.png", TextString.text_douban_top),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: TopIconWidget("images/ic_douban_guess.png",
+                      TextString.text_douban_guess),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: TopIconWidget("images/ic_douban_film_list.png",
+                      TextString.text_douban_film_list),
+                  flex: 1,
+                )
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(left: 16, right: 16),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: 110,
+                  margin: EdgeInsets.only(top: 35),
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 47, 22, 74),
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    children: <Widget>[
+                      MultiImageWidget(todayMovieList, 20, 70),
+                      Text(
+                        "Top250个最佳影片",
+                        style: TextStyle(
+                            color: CustomColors.color_ffffff, fontSize: 16),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: HotSoonWidget(),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+          sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                Subjects subjects = movieList[index];
+                if (_selectIndex == 0) {
+                  return _getHotMovieItem(subjects);
+                } else {
+                  return _getMovieSoonItem(subjects);
+                }
+              }, childCount: movieList.length ??= 0),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  // GridView的item的宽度和高度的比例
+                  childAspectRatio: ratio,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  // GridView的每个item的宽度
+                  maxCrossAxisExtent: (width - 32) / 3)),
+        )
+      ],
+    );
   }
 
   ///
@@ -111,37 +211,28 @@ class MovieDetailState extends State<MovieDetailPage>
     }, errorCallBack: (msg) {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    print(width);
-    return CustomScrollView(
-      shrinkWrap: true,
-      slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: HotSoonWidget(),
-        ),
-        SliverPadding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 16),
-          sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                Subjects subjects = movieList[index];
-                if (_selectIndex == 0) {
-                  return _getHotMovieItem(subjects);
-                } else {
-                  return _getMovieSoonItem(subjects);
-                }
-              }, childCount: movieList.length ??= 0),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  // GridView的item的宽度和高度的比例
-                  childAspectRatio: ratio,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  // GridView的每个item的宽度
-                  maxCrossAxisExtent: (width - 32) / 3)),
-        )
-      ],
-    );
+  ///
+  /// 今日可看电影
+  ///
+  void _getBannerMovie() {
+    Map<String, String> params = new Map();
+    // 生成240以内的随机数
+    params["start"] = Random().nextInt(240).toString();
+    params["count"] = "3";
+    NetTools.get(ApiConfig.URL_MOVIE_TOP250, (data) {
+      if (data != null) {
+        MovieHot movieHot = MovieHot.fromJson(data);
+        setState(() {
+          if (movieHot != null) {
+            if (todayMovieList.isNotEmpty) {
+              todayMovieList.clear();
+            }
+            print(todayMovieList);
+            todayMovieList.addAll(movieHot.subjects);
+          }
+        });
+      }
+    }, params: params);
   }
 
   ///

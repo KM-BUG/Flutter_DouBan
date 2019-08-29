@@ -13,4 +13,10 @@ class ApiConfig {
    * 即将上映
    */
   static const String URL_MOVIE_SOON = URL_BASE + "/v2/movie/coming_soon";
+
+  /**
+   * 前250高分电影
+   * start=2&count=2
+   */
+  static const String URL_MOVIE_TOP250 = URL_BASE + "/v2/movie/top250";
 }
