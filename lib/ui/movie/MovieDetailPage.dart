@@ -6,6 +6,7 @@ import 'package:playdouban/http/NetTools.dart';
 import 'package:playdouban/model/MovieHot.dart';
 import 'package:playdouban/res/CustomColors.dart';
 import 'package:playdouban/res/TextString.dart';
+import 'package:playdouban/widget/HotDouBanWidget.dart';
 import 'package:playdouban/widget/MultiImageWidget.dart';
 import 'package:playdouban/widget/RatingBar.dart';
 import 'package:playdouban/widget/TopIconWidget.dart';
@@ -21,6 +22,7 @@ class MovieDetailState extends State<MovieDetailPage>
     with SingleTickerProviderStateMixin {
   TabBar _tabBar;
   TabController _tabController;
+  TitleBarMoreWidget hotDouBanWidget;
 
   // 当前选中的Tab
   int _selectIndex = 0;
@@ -33,6 +35,9 @@ class MovieDetailState extends State<MovieDetailPage>
 
   // 影院热映,即将上映电影
   List<Subjects> movieList = new List();
+
+  // 豆瓣热门电影
+  List<Subjects> doubanHotList = new List();
 
   // 宽高比例
   double ratio = 0.6;
@@ -69,10 +74,13 @@ class MovieDetailState extends State<MovieDetailPage>
         }
       },
     );
+    hotDouBanWidget = TitleBarMoreWidget(TextString.text_douban_hot, () {});
     // 获取今日可看电影
     _getBannerMovie();
     // 获取影院热映电影
     _getMovieHot();
+    // 获取豆瓣热门
+    _getDouBanMovieHot();
   }
 
   @override
@@ -160,7 +168,28 @@ class MovieDetailState extends State<MovieDetailPage>
                   crossAxisSpacing: 10,
                   // GridView的每个item的宽度
                   maxCrossAxisExtent: (width - 32) / 3)),
-        )
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: hotDouBanWidget,
+          ),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+          sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                Subjects subjects = doubanHotList[index];
+                return _getHotMovieItem(subjects);
+              }, childCount: doubanHotList.length ??= 0),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  // GridView的item的宽度和高度的比例
+                  childAspectRatio: ratio,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  // GridView的每个item的宽度
+                  maxCrossAxisExtent: (width - 32) / 3)),
+        ),
       ],
     );
   }
@@ -227,12 +256,31 @@ class MovieDetailState extends State<MovieDetailPage>
             if (todayMovieList.isNotEmpty) {
               todayMovieList.clear();
             }
-            print(todayMovieList);
             todayMovieList.addAll(movieHot.subjects);
           }
         });
       }
     }, params: params);
+  }
+
+  ///
+  /// 豆瓣热门
+  ///
+  void _getDouBanMovieHot() {
+    NetTools.get(ApiConfig.URL_MOVIE_DOU_HOT, (data) {
+      if (data != null) {
+        MovieHot movieHot = MovieHot.fromJson(data);
+        setState(() {
+          if (movieHot != null) {
+            if (doubanHotList.isNotEmpty) {
+              doubanHotList.clear();
+            }
+            doubanHotList.addAll(movieHot.subjects.sublist(0, 6));
+            hotDouBanWidget.setMovieCount(movieHot.subjects.length);
+          }
+        });
+      }
+    });
   }
 
   ///

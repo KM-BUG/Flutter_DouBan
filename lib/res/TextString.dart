@@ -16,4 +16,5 @@ class TextString{
   static const String text_douban_top = "豆瓣榜单";
   static const String text_douban_guess = "豆瓣猜";
   static const String text_douban_film_list = "豆瓣片单";
+  static const String text_douban_hot = "豆瓣热门";
 }
